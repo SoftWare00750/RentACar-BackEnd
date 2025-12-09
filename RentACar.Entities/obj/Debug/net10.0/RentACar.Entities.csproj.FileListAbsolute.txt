@@ -1,0 +1,16 @@
+C:\Users\Damilola\Documents\RentaCar\RentA-Car-BackEnd\RentACar.Entities\bin\Debug\net10.0\RentACar.Entities.deps.json
+C:\Users\Damilola\Documents\RentaCar\RentA-Car-BackEnd\RentACar.Entities\bin\Debug\net10.0\RentACar.Entities.dll
+C:\Users\Damilola\Documents\RentaCar\RentA-Car-BackEnd\RentACar.Entities\bin\Debug\net10.0\RentACar.Entities.pdb
+C:\Users\Damilola\Documents\RentaCar\RentA-Car-BackEnd\RentACar.Entities\bin\Debug\net10.0\RentACar.Core.dll
+C:\Users\Damilola\Documents\RentaCar\RentA-Car-BackEnd\RentACar.Entities\bin\Debug\net10.0\RentACar.Core.pdb
+C:\Users\Damilola\Documents\RentaCar\RentA-Car-BackEnd\RentACar.Entities\obj\Debug\net10.0\RentACar.Entities.csproj.AssemblyReference.cache
+C:\Users\Damilola\Documents\RentaCar\RentA-Car-BackEnd\RentACar.Entities\obj\Debug\net10.0\RentACar.Entities.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Damilola\Documents\RentaCar\RentA-Car-BackEnd\RentACar.Entities\obj\Debug\net10.0\RentACar.Entities.AssemblyInfoInputs.cache
+C:\Users\Damilola\Documents\RentaCar\RentA-Car-BackEnd\RentACar.Entities\obj\Debug\net10.0\RentACar.Entities.AssemblyInfo.cs
+C:\Users\Damilola\Documents\RentaCar\RentA-Car-BackEnd\RentACar.Entities\obj\Debug\net10.0\RentACar.Entities.csproj.CoreCompileInputs.cache
+C:\Users\Damilola\Documents\RentaCar\RentA-Car-BackEnd\RentACar.Entities\obj\Debug\net10.0\RentACar.Entities.sourcelink.json
+C:\Users\Damilola\Documents\RentaCar\RentA-Car-BackEnd\RentACar.Entities\obj\Debug\net10.0\RentACar.0DC6F007.Up2Date
+C:\Users\Damilola\Documents\RentaCar\RentA-Car-BackEnd\RentACar.Entities\obj\Debug\net10.0\RentACar.Entities.dll
+C:\Users\Damilola\Documents\RentaCar\RentA-Car-BackEnd\RentACar.Entities\obj\Debug\net10.0\refint\RentACar.Entities.dll
+C:\Users\Damilola\Documents\RentaCar\RentA-Car-BackEnd\RentACar.Entities\obj\Debug\net10.0\RentACar.Entities.pdb
+C:\Users\Damilola\Documents\RentaCar\RentA-Car-BackEnd\RentACar.Entities\obj\Debug\net10.0\ref\RentACar.Entities.dll
