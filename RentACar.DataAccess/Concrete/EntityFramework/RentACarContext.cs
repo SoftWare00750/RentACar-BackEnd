@@ -22,7 +22,7 @@ namespace RentACar.DataAccess.Concrete.EntityFramework
     {
         // This will use the connection string from appsettings.json or environment variable
         var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection") 
-            ?? "Host=localhost;Port=5432;Database=rentacardb;Username=postgres;Password=yourpassword";
+            ?? "Host=dpg-d4s8l2ndiees73a8ko8g-a;Port=5432;Database=rentacardb;Username=rentacar_user;Password=AOdeXyXXkOfcKhC2nqjzoRRwtljGUAnB";
         
         optionsBuilder.UseNpgsql(connectionString);
     }
