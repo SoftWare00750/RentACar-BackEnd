@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("RentACar.API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+480469cc31bc3e1cda534b82d1fb05544322e6ae")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1ab21879fc112b85490539375da54ce4092fb077")]
 [assembly: System.Reflection.AssemblyProductAttribute("RentACar.API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("RentACar.API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
