@@ -12,20 +12,20 @@ COPY ["RentACar.Entities/RentACar.Entities.csproj", "RentACar.Entities/"]
 # Restore dependencies
 RUN dotnet restore "RentACar.API/RentACar.API.csproj"
 
-# Copy all source files
+# Copy the rest of the source code
 COPY . .
 
 # Build and publish
 WORKDIR "/src/RentACar.API"
-RUN dotnet publish "RentACar.API.csproj" -c Release -o /app/publish
+RUN dotnet publish "RentACar.API.csproj" -c Release -o /publish
 
 # Runtime stage
-FROM mcr.microsoft.com/dotnet/aspnet:8.0
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
 EXPOSE 80
 
-# Copy published files
-COPY --from=build /app/publish .
+# Copy published output from build stage
+COPY --from=build /publish .
 
-# Set entry point
+# Start the application
 ENTRYPOINT ["dotnet", "RentACar.API.dll"]
