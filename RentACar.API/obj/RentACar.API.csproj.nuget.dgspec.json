@@ -57,7 +57,7 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
-            "AspNetCore.HealthChecks.Npgsql": {
+            "AspNetCore.HealthChecks.NpgSql": {
               "target": "Package",
               "version": "[9.0.0, )"
             },
