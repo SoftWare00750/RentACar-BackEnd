@@ -65,6 +65,17 @@ namespace RentACar.Business.Concrete
             return new SuccessDataResult<List<Rental>>(_rentalDal.GetAll(), "Rentals listed");
         }
 
+        // Add this missing method
+        public IDataResult<Rental> GetById(int rentalId)
+        {
+            var rental = _rentalDal.Get(r => r.RentalId == rentalId);
+            if (rental == null)
+            {
+                return new ErrorDataResult<Rental>("Rental not found");
+            }
+            return new SuccessDataResult<Rental>(rental);
+        }
+
         public IResult Update(Rental rental)
         {
             // Validate return date if provided
