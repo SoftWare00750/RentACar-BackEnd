@@ -4,3 +4,17 @@ C:\Users\Damilola\Documents\RentaCar\RentA-Car-BackEnd\RentACar.Business\obj\Deb
 C:\Users\Damilola\Documents\RentaCar\RentA-Car-BackEnd\RentACar.Business\obj\Debug\net8.0\RentACar.Business.AssemblyInfo.cs
 C:\Users\Damilola\Documents\RentaCar\RentA-Car-BackEnd\RentACar.Business\obj\Debug\net8.0\RentACar.Business.csproj.CoreCompileInputs.cache
 C:\Users\Damilola\Documents\RentaCar\RentA-Car-BackEnd\RentACar.Business\obj\Debug\net8.0\RentACar.Business.sourcelink.json
+C:\Users\Damilola\Documents\RentaCar\RentA-Car-BackEnd\RentACar.Business\bin\Debug\net8.0\RentACar.Business.deps.json
+C:\Users\Damilola\Documents\RentaCar\RentA-Car-BackEnd\RentACar.Business\bin\Debug\net8.0\RentACar.Business.dll
+C:\Users\Damilola\Documents\RentaCar\RentA-Car-BackEnd\RentACar.Business\bin\Debug\net8.0\RentACar.Business.pdb
+C:\Users\Damilola\Documents\RentaCar\RentA-Car-BackEnd\RentACar.Business\bin\Debug\net8.0\RentACar.Core.dll
+C:\Users\Damilola\Documents\RentaCar\RentA-Car-BackEnd\RentACar.Business\bin\Debug\net8.0\RentACar.DataAccess.dll
+C:\Users\Damilola\Documents\RentaCar\RentA-Car-BackEnd\RentACar.Business\bin\Debug\net8.0\RentACar.Entities.dll
+C:\Users\Damilola\Documents\RentaCar\RentA-Car-BackEnd\RentACar.Business\bin\Debug\net8.0\RentACar.DataAccess.pdb
+C:\Users\Damilola\Documents\RentaCar\RentA-Car-BackEnd\RentACar.Business\bin\Debug\net8.0\RentACar.Entities.pdb
+C:\Users\Damilola\Documents\RentaCar\RentA-Car-BackEnd\RentACar.Business\bin\Debug\net8.0\RentACar.Core.pdb
+C:\Users\Damilola\Documents\RentaCar\RentA-Car-BackEnd\RentACar.Business\obj\Debug\net8.0\RentACar.023827BA.Up2Date
+C:\Users\Damilola\Documents\RentaCar\RentA-Car-BackEnd\RentACar.Business\obj\Debug\net8.0\RentACar.Business.dll
+C:\Users\Damilola\Documents\RentaCar\RentA-Car-BackEnd\RentACar.Business\obj\Debug\net8.0\refint\RentACar.Business.dll
+C:\Users\Damilola\Documents\RentaCar\RentA-Car-BackEnd\RentACar.Business\obj\Debug\net8.0\RentACar.Business.pdb
+C:\Users\Damilola\Documents\RentaCar\RentA-Car-BackEnd\RentACar.Business\obj\Debug\net8.0\ref\RentACar.Business.dll
