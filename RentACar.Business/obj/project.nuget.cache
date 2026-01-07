@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "EdtpYE0ODFQ=",
+  "dgSpecHash": "2JpZAoaTUCk=",
   "success": true,
   "projectFilePath": "C:\\Users\\Damilola\\Documents\\RentaCar\\RentA-Car-BackEnd\\RentACar.Business\\RentACar.Business.csproj",
   "expectedPackageFiles": [
@@ -18,29 +18,16 @@
     "C:\\Users\\Damilola\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\8.0.2\\microsoft.extensions.logging.abstractions.8.0.2.nupkg.sha512",
     "C:\\Users\\Damilola\\.nuget\\packages\\microsoft.extensions.options\\8.0.2\\microsoft.extensions.options.8.0.2.nupkg.sha512",
     "C:\\Users\\Damilola\\.nuget\\packages\\microsoft.extensions.primitives\\9.0.0\\microsoft.extensions.primitives.9.0.0.nupkg.sha512",
-    "C:\\Users\\Damilola\\.nuget\\packages\\microsoft.identitymodel.abstractions\\8.0.2\\microsoft.identitymodel.abstractions.8.0.2.nupkg.sha512",
-    "C:\\Users\\Damilola\\.nuget\\packages\\microsoft.identitymodel.jsonwebtokens\\8.0.2\\microsoft.identitymodel.jsonwebtokens.8.0.2.nupkg.sha512",
-    "C:\\Users\\Damilola\\.nuget\\packages\\microsoft.identitymodel.logging\\8.0.2\\microsoft.identitymodel.logging.8.0.2.nupkg.sha512",
-    "C:\\Users\\Damilola\\.nuget\\packages\\microsoft.identitymodel.tokens\\8.0.2\\microsoft.identitymodel.tokens.8.0.2.nupkg.sha512",
+    "C:\\Users\\Damilola\\.nuget\\packages\\microsoft.identitymodel.abstractions\\8.2.1\\microsoft.identitymodel.abstractions.8.2.1.nupkg.sha512",
+    "C:\\Users\\Damilola\\.nuget\\packages\\microsoft.identitymodel.jsonwebtokens\\8.2.1\\microsoft.identitymodel.jsonwebtokens.8.2.1.nupkg.sha512",
+    "C:\\Users\\Damilola\\.nuget\\packages\\microsoft.identitymodel.logging\\8.2.1\\microsoft.identitymodel.logging.8.2.1.nupkg.sha512",
+    "C:\\Users\\Damilola\\.nuget\\packages\\microsoft.identitymodel.tokens\\8.2.1\\microsoft.identitymodel.tokens.8.2.1.nupkg.sha512",
     "C:\\Users\\Damilola\\.nuget\\packages\\npgsql\\8.0.0\\npgsql.8.0.0.nupkg.sha512",
     "C:\\Users\\Damilola\\.nuget\\packages\\npgsql.entityframeworkcore.postgresql\\8.0.0\\npgsql.entityframeworkcore.postgresql.8.0.0.nupkg.sha512",
-    "C:\\Users\\Damilola\\.nuget\\packages\\system.identitymodel.tokens.jwt\\8.0.2\\system.identitymodel.tokens.jwt.8.0.2.nupkg.sha512",
+    "C:\\Users\\Damilola\\.nuget\\packages\\system.identitymodel.tokens.jwt\\8.2.1\\system.identitymodel.tokens.jwt.8.2.1.nupkg.sha512",
     "C:\\Users\\Damilola\\.nuget\\packages\\microsoft.netcore.app.ref\\8.0.22\\microsoft.netcore.app.ref.8.0.22.nupkg.sha512",
     "C:\\Users\\Damilola\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\8.0.22\\microsoft.windowsdesktop.app.ref.8.0.22.nupkg.sha512",
     "C:\\Users\\Damilola\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\8.0.22\\microsoft.aspnetcore.app.ref.8.0.22.nupkg.sha512"
   ],
-  "logs": [
-    {
-      "code": "NU1603",
-      "level": "Warning",
-      "message": "RentACar.Core depends on Microsoft.Extensions.Configuration.Binder (>= 8.0.11) but Microsoft.Extensions.Configuration.Binder 8.0.11 was not found. Microsoft.Extensions.Configuration.Binder 9.0.0 was resolved instead.",
-      "projectPath": "C:\\Users\\Damilola\\Documents\\RentaCar\\RentA-Car-BackEnd\\RentACar.Business\\RentACar.Business.csproj",
-      "warningLevel": 1,
-      "filePath": "C:\\Users\\Damilola\\Documents\\RentaCar\\RentA-Car-BackEnd\\RentACar.Business\\RentACar.Business.csproj",
-      "libraryId": "Microsoft.Extensions.Configuration.Binder",
-      "targetGraphs": [
-        "net8.0"
-      ]
-    }
-  ]
+  "logs": []
 }

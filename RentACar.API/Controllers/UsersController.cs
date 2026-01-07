@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RentACar.Business.Abstract;
 
@@ -5,6 +6,7 @@ namespace RentACar.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class UsersController : ControllerBase
     {
         IUserService _userService;
@@ -14,7 +16,7 @@ namespace RentACar.API.Controllers
             _userService = userService;
         }
 
-        [HttpGet("getbyid")]
+        [HttpGet("getbyid/{userId}")]
         public IActionResult GetById(int userId)
         {
             var result = _userService.GetById(userId);
@@ -22,7 +24,7 @@ namespace RentACar.API.Controllers
             {
                 return Ok(result);
             }
-            return BadRequest(result);
+            return NotFound(result);
         }
     }
 }

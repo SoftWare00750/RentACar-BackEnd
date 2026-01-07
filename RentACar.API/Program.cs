@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using RentACar.API.Middleware;
 using RentACar.Business.Abstract;
 using RentACar.Business.Concrete;
 using RentACar.Core.Utilities.Security.JWT;
@@ -22,7 +23,12 @@ builder.Services.AddSwaggerGen(c =>
     { 
         Title = "RentACar API", 
         Version = "v1",
-        Description = "Car Rental Management System API"
+        Description = "Car Rental Management System API",
+        Contact = new OpenApiContact
+        {
+            Name = "RentACar Support",
+            Email = "support@rentacar.com"
+        }
     });
 
     // Add JWT Authentication to Swagger
@@ -52,8 +58,12 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 // Configure DbContext
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection")
+    ?? throw new InvalidOperationException("Connection string not found");
+
 builder.Services.AddDbContext<RentACarContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(connectionString));
 
 // Dependency Injection - Services
 builder.Services.AddScoped<IAuthService, AuthManager>();
@@ -74,7 +84,9 @@ builder.Services.AddScoped<IRentalDal, EfRentalDal>();
 builder.Services.AddScoped<ITokenHelper, JwtHelper>();
 
 // Configure JWT Authentication
-var tokenOptions = builder.Configuration.GetSection("TokenOptions").Get<TokenOptions>();
+var tokenOptions = builder.Configuration.GetSection("TokenOptions").Get<TokenOptions>()
+    ?? throw new InvalidOperationException("TokenOptions configuration not found");
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -86,20 +98,37 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuerSigningKey = true,
             ValidIssuer = tokenOptions.Issuer,
             ValidAudience = tokenOptions.Audience,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenOptions.SecurityKey))
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenOptions.SecurityKey)),
+            ClockSkew = TimeSpan.Zero
         };
     });
 
 // Add CORS
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll", builder =>
+    options.AddPolicy("AllowAll", policyBuilder =>
     {
-        builder.AllowAnyOrigin()
+        policyBuilder.AllowAnyOrigin()
                .AllowAnyMethod()
                .AllowAnyHeader();
     });
+    
+    // For production, use specific origins
+    options.AddPolicy("Production", policyBuilder =>
+    {
+        var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>() 
+            ?? new[] { "https://yourdomain.com" };
+        
+        policyBuilder.WithOrigins(allowedOrigins)
+               .AllowAnyMethod()
+               .AllowAnyHeader()
+               .AllowCredentials();
+    });
 });
+
+// Add Health Checks
+builder.Services.AddHealthChecks()
+    .AddNpgSql(connectionString, name: "database");
 
 var app = builder.Build();
 
@@ -114,13 +143,19 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+// Use exception middleware
+app.UseMiddleware<ExceptionMiddleware>();
+
 app.UseHttpsRedirection();
 
-app.UseCors("AllowAll");
+// Use appropriate CORS policy
+var corsPolicy = app.Environment.IsDevelopment() ? "AllowAll" : "Production";
+app.UseCors(corsPolicy);
 
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHealthChecks("/health");
 
 app.Run();

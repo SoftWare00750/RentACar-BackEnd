@@ -16,6 +16,17 @@ namespace RentACar.Business.Concrete
 
         public IResult Add(Brand brand)
         {
+            if (string.IsNullOrWhiteSpace(brand.BrandName))
+            {
+                return new ErrorResult("Brand name is required");
+            }
+
+            var existingBrand = _brandDal.Get(b => b.BrandName.ToLower() == brand.BrandName.ToLower());
+            if (existingBrand != null)
+            {
+                return new ErrorResult("Brand already exists");
+            }
+
             _brandDal.Add(brand);
             return new SuccessResult("Brand added");
         }
@@ -43,6 +54,17 @@ namespace RentACar.Business.Concrete
 
         public IResult Update(Brand brand)
         {
+            if (string.IsNullOrWhiteSpace(brand.BrandName))
+            {
+                return new ErrorResult("Brand name is required");
+            }
+
+            var existingBrand = _brandDal.Get(b => b.BrandName.ToLower() == brand.BrandName.ToLower() && b.BrandId != brand.BrandId);
+            if (existingBrand != null)
+            {
+                return new ErrorResult("Another brand with this name already exists");
+            }
+
             _brandDal.Update(brand);
             return new SuccessResult("Brand updated");
         }

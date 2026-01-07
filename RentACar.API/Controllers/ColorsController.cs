@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RentACar.Business.Abstract;
 using RentACar.Entities.Concrete;
@@ -6,6 +7,7 @@ namespace RentACar.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ColorsController : ControllerBase
     {
         IColorService _colorService;
@@ -16,6 +18,7 @@ namespace RentACar.API.Controllers
         }
 
         [HttpGet("getall")]
+        [AllowAnonymous]
         public IActionResult GetAll()
         {
             var result = _colorService.GetAll();
@@ -26,7 +29,8 @@ namespace RentACar.API.Controllers
             return BadRequest(result);
         }
 
-        [HttpGet("getbyid")]
+        [HttpGet("getbyid/{colorId}")]
+        [AllowAnonymous]
         public IActionResult GetById(int colorId)
         {
             var result = _colorService.GetById(colorId);
@@ -34,12 +38,17 @@ namespace RentACar.API.Controllers
             {
                 return Ok(result);
             }
-            return BadRequest(result);
+            return NotFound(result);
         }
 
         [HttpPost("add")]
-        public IActionResult Add(Color color)
+        public IActionResult Add([FromBody] Color color)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var result = _colorService.Add(color);
             if (result.Success)
             {
@@ -48,9 +57,14 @@ namespace RentACar.API.Controllers
             return BadRequest(result);
         }
 
-        [HttpPost("update")]
-        public IActionResult Update(Color color)
+        [HttpPut("update")]
+        public IActionResult Update([FromBody] Color color)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var result = _colorService.Update(color);
             if (result.Success)
             {
@@ -59,10 +73,16 @@ namespace RentACar.API.Controllers
             return BadRequest(result);
         }
 
-        [HttpPost("delete")]
-        public IActionResult Delete(Color color)
+        [HttpDelete("delete/{colorId}")]
+        public IActionResult Delete(int colorId)
         {
-            var result = _colorService.Delete(color);
+            var color = _colorService.GetById(colorId);
+            if (!color.Success)
+            {
+                return NotFound(color);
+            }
+            
+            var result = _colorService.Delete(color.Data);
             if (result.Success)
             {
                 return Ok(result);

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RentACar.Business.Abstract;
 using RentACar.Entities.Concrete;
@@ -6,6 +7,7 @@ namespace RentACar.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class CarsController : ControllerBase
     {
         ICarService _carService;
@@ -16,6 +18,7 @@ namespace RentACar.API.Controllers
         }
 
         [HttpGet("getall")]
+        [AllowAnonymous]
         public IActionResult GetAll()
         {
             var result = _carService.GetAll();
@@ -26,7 +29,8 @@ namespace RentACar.API.Controllers
             return BadRequest(result);
         }
 
-        [HttpGet("getbyid")]
+        [HttpGet("getbyid/{carId}")]
+        [AllowAnonymous]
         public IActionResult GetById(int carId)
         {
             var result = _carService.GetById(carId);
@@ -34,10 +38,11 @@ namespace RentACar.API.Controllers
             {
                 return Ok(result);
             }
-            return BadRequest(result);
+            return NotFound(result);
         }
 
         [HttpGet("getcardetails")]
+        [AllowAnonymous]
         public IActionResult GetCarDetails()
         {
             var result = _carService.GetCarDetails();
@@ -48,7 +53,8 @@ namespace RentACar.API.Controllers
             return BadRequest(result);
         }
 
-        [HttpGet("getcardetail")]
+        [HttpGet("getcardetail/{carId}")]
+        [AllowAnonymous]
         public IActionResult GetCarDetail(int carId)
         {
             var result = _carService.GetCarDetail(carId);
@@ -56,10 +62,11 @@ namespace RentACar.API.Controllers
             {
                 return Ok(result);
             }
-            return BadRequest(result);
+            return NotFound(result);
         }
 
-        [HttpGet("getbybrand")]
+        [HttpGet("getbybrand/{brandId}")]
+        [AllowAnonymous]
         public IActionResult GetByBrandId(int brandId)
         {
             var result = _carService.GetCarsByBrandId(brandId);
@@ -70,7 +77,8 @@ namespace RentACar.API.Controllers
             return BadRequest(result);
         }
 
-        [HttpGet("getbycolor")]
+        [HttpGet("getbycolor/{colorId}")]
+        [AllowAnonymous]
         public IActionResult GetByColorId(int colorId)
         {
             var result = _carService.GetCarsByColorId(colorId);
@@ -82,8 +90,13 @@ namespace RentACar.API.Controllers
         }
 
         [HttpPost("add")]
-        public IActionResult Add(Car car)
+        public IActionResult Add([FromBody] Car car)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var result = _carService.Add(car);
             if (result.Success)
             {
@@ -92,9 +105,14 @@ namespace RentACar.API.Controllers
             return BadRequest(result);
         }
 
-        [HttpPost("update")]
-        public IActionResult Update(Car car)
+        [HttpPut("update")]
+        public IActionResult Update([FromBody] Car car)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var result = _carService.Update(car);
             if (result.Success)
             {
@@ -103,10 +121,16 @@ namespace RentACar.API.Controllers
             return BadRequest(result);
         }
 
-        [HttpPost("delete")]
-        public IActionResult Delete(Car car)
+        [HttpDelete("delete/{carId}")]
+        public IActionResult Delete(int carId)
         {
-            var result = _carService.Delete(car);
+            var car = _carService.GetById(carId);
+            if (!car.Success)
+            {
+                return NotFound(car);
+            }
+            
+            var result = _carService.Delete(car.Data);
             if (result.Success)
             {
                 return Ok(result);

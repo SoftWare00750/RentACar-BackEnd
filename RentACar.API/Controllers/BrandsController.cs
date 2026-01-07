@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RentACar.Business.Abstract;
 using RentACar.Entities.Concrete;
@@ -6,6 +7,7 @@ namespace RentACar.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class BrandsController : ControllerBase
     {
         IBrandService _brandService;
@@ -16,6 +18,7 @@ namespace RentACar.API.Controllers
         }
 
         [HttpGet("getall")]
+        [AllowAnonymous]
         public IActionResult GetAll()
         {
             var result = _brandService.GetAll();
@@ -26,7 +29,8 @@ namespace RentACar.API.Controllers
             return BadRequest(result);
         }
 
-        [HttpGet("getbyid")]
+        [HttpGet("getbyid/{brandId}")]
+        [AllowAnonymous]
         public IActionResult GetById(int brandId)
         {
             var result = _brandService.GetById(brandId);
@@ -34,12 +38,17 @@ namespace RentACar.API.Controllers
             {
                 return Ok(result);
             }
-            return BadRequest(result);
+            return NotFound(result);
         }
 
         [HttpPost("add")]
-        public IActionResult Add(Brand brand)
+        public IActionResult Add([FromBody] Brand brand)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var result = _brandService.Add(brand);
             if (result.Success)
             {
@@ -48,9 +57,14 @@ namespace RentACar.API.Controllers
             return BadRequest(result);
         }
 
-        [HttpPost("update")]
-        public IActionResult Update(Brand brand)
+        [HttpPut("update")]
+        public IActionResult Update([FromBody] Brand brand)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var result = _brandService.Update(brand);
             if (result.Success)
             {
@@ -59,10 +73,16 @@ namespace RentACar.API.Controllers
             return BadRequest(result);
         }
 
-        [HttpPost("delete")]
-        public IActionResult Delete(Brand brand)
+        [HttpDelete("delete/{brandId}")]
+        public IActionResult Delete(int brandId)
         {
-            var result = _brandService.Delete(brand);
+            var brand = _brandService.GetById(brandId);
+            if (!brand.Success)
+            {
+                return NotFound(brand);
+            }
+            
+            var result = _brandService.Delete(brand.Data);
             if (result.Success)
             {
                 return Ok(result);

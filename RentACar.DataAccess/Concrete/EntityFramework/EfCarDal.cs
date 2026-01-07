@@ -19,6 +19,8 @@ namespace RentACar.DataAccess.Concrete.EntityFramework
                              select new CarDetailDto
                              {
                                  CarId = c.CarId,
+                                 BrandId = c.BrandId,
+                                 ColorId = c.ColorId,
                                  BrandName = b.BrandName,
                                  ColorName = col.ColorName,
                                  ModelYear = c.ModelYear,
@@ -42,6 +44,8 @@ namespace RentACar.DataAccess.Concrete.EntityFramework
                              select new CarDetailDto
                              {
                                  CarId = c.CarId,
+                                 BrandId = c.BrandId,
+                                 ColorId = c.ColorId,
                                  BrandName = b.BrandName,
                                  ColorName = col.ColorName,
                                  ModelYear = c.ModelYear,

@@ -16,8 +16,13 @@ namespace RentACar.API.Controllers
         }
 
         [HttpPost("login")]
-        public IActionResult Login(UserForLoginDto userForLoginDto)
+        public IActionResult Login([FromBody] UserForLoginDto userForLoginDto)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var userToLogin = _authService.Login(userForLoginDto);
             if (!userToLogin.Success)
             {
@@ -34,8 +39,13 @@ namespace RentACar.API.Controllers
         }
 
         [HttpPost("register")]
-        public IActionResult Register(UserForRegisterDto userForRegisterDto)
+        public IActionResult Register([FromBody] UserForRegisterDto userForRegisterDto)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var userExists = _authService.UserExists(userForRegisterDto.Email);
             if (!userExists.Success)
             {
