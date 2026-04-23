@@ -1,22 +1,138 @@
-function fibonacciGenerator(n) {
-    var output = [];
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using RentACar.Business.Abstract;
+using RentACar.Entities.Concrete;
+using RentACar.Entities.DTOs;
 
-    if (n === 1) {
-        output = [0];
-    } 
-    else if (n === 2) {
-        output = [0, 1];
-    } 
-    else {
-        output = [0, 1];
-        
-        // Start the loop from index 2 since we already have 0 and 1
-        for (var i = 2; i < n; i++) {
-            // Add the last two numbers in the current array
-            var nextValue = output[output.length - 2] + output[output.length - 1];
-            output.push(nextValue);
+namespace RentACar.API.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    [Authorize]
+    public class CarsController : ControllerBase
+    {
+        ICarService _carService;
+
+        public CarsController(ICarService carService)
+        {
+            _carService = carService;
+        }
+
+        [HttpGet("getall")]
+        [AllowAnonymous]
+        public IActionResult GetAll()
+        {
+            var result = _carService.GetAll();
+            if (result.Success) return Ok(result);
+            return BadRequest(result);
+        }
+
+        [HttpGet("getcardetails")]
+        [AllowAnonymous]
+        public IActionResult GetCarDetails()
+        {
+            var result = _carService.GetCarDetails();
+            if (result.Success) return Ok(result);
+            return BadRequest(result);
+        }
+
+        [HttpGet("getcardetail/{carId}")]
+        [AllowAnonymous]
+        public IActionResult GetCarDetail(int carId)
+        {
+            var result = _carService.GetCarDetail(carId);
+            if (result.Success) return Ok(result);
+            return BadRequest(result);
+        }
+
+        [HttpGet("getbyid")]
+        [AllowAnonymous]
+        public IActionResult GetById([FromQuery] int carId)
+        {
+            var result = _carService.GetById(carId);
+            if (result.Success) return Ok(result);
+            return NotFound(result);
+        }
+
+        [HttpGet("getbyid/{carId:int}")]
+        [AllowAnonymous]
+        public IActionResult GetByIdRoute([FromRoute] int carId)
+        {
+            var result = _carService.GetById(carId);
+            if (result.Success) return Ok(result);
+            return NotFound(result);
+        }
+
+        [HttpGet("getcarsbybrandid")]
+        [AllowAnonymous]
+        public IActionResult GetCarsByBrandId([FromQuery] int brandId)
+        {
+            var result = _carService.GetCarsByBrandId(brandId);
+            if (result.Success) return Ok(result);
+            return BadRequest(result);
+        }
+
+        [HttpGet("getcarsbycolorid")]
+        [AllowAnonymous]
+        public IActionResult GetCarsByColorId([FromQuery] int colorId)
+        {
+            var result = _carService.GetCarsByColorId(colorId);
+            if (result.Success) return Ok(result);
+            return BadRequest(result);
+        }
+
+        [HttpGet("getcarsbybrandandcolorid")]
+        [AllowAnonymous]
+        public IActionResult GetCarsByBrandAndColorId([FromQuery] int brandId, [FromQuery] int colorId)
+        {
+            var result = _carService.GetCarsByBrandAndColorId(brandId, colorId);
+            if (result.Success) return Ok(result);
+            return BadRequest(result);
+        }
+
+        [HttpPost("add")]
+        public IActionResult Add([FromBody] Car car)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+            var result = _carService.Add(car);
+            if (result.Success) return Ok(result);
+            return BadRequest(result);
+        }
+
+        [HttpPost("updated")]
+        public IActionResult UpdatedPost([FromBody] Car car)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+            var result = _carService.Update(car);
+            if (result.Success) return Ok(result);
+            return BadRequest(result);
+        }
+
+        [HttpPut("update")]
+        public IActionResult Update([FromBody] Car car)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+            var result = _carService.Update(car);
+            if (result.Success) return Ok(result);
+            return BadRequest(result);
+        }
+
+        [HttpPost("delete")]
+        public IActionResult DeletePost([FromBody] Car car)
+        {
+            var result = _carService.Delete(car);
+            if (result.Success) return Ok(result);
+            return BadRequest(result);
+        }
+
+        [HttpDelete("delete/{carId}")]
+        public IActionResult Delete(int carId)
+        {
+            var car = _carService.GetById(carId);
+            if (!car.Success) return NotFound(car);
+            var result = _carService.Delete(car.Data);
+            if (result.Success) return Ok(result);
+            return BadRequest(result);
         }
     }
-
-    return output;
 }
