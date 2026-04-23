@@ -1,35 +1,101 @@
-using RentACar.Core.Entities;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using RentACar.Business.Abstract;
+using RentACar.Core.Utilities.Results;
+using RentACar.DataAccess.Abstract;
+using RentACar.Entities.Concrete;
+using RentACar.Entities.DTOs;
 
-namespace RentACar.Entities.Concrete
+namespace RentACar.Business.Concrete
 {
-    public class Car : IEntity
+    public class CarManager : ICarService
     {
-        public int CarId { get; set; }
+        ICarDal _carDal;
 
-        [Required(ErrorMessage = "Brand ID is required")]
-        public int BrandId { get; set; }
+        public CarManager(ICarDal carDal)
+        {
+            _carDal = carDal;
+        }
 
-        [Required(ErrorMessage = "Color ID is required")]
-        public int ColorId { get; set; }
+        public IResult Add(Car car)
+        {
+            if (car.DailyPrice <= 0)
+                return new ErrorResult("Daily price must be greater than 0");
+            if (string.IsNullOrWhiteSpace(car.Description))
+                return new ErrorResult("Description is required");
 
-        [Required(ErrorMessage = "Model year is required")]
-        [StringLength(4, MinimumLength = 4, ErrorMessage = "Model year must be 4 characters")]
-        public string ModelYear { get; set; }
+            _carDal.Add(car);
+            return new SuccessResult("Car added");
+        }
 
-        [Required(ErrorMessage = "Daily price is required")]
-        [Range(0.01, double.MaxValue, ErrorMessage = "Daily price must be greater than 0")]
-        public decimal DailyPrice { get; set; }
+        public IResult Delete(Car car)
+        {
+            _carDal.Delete(car);
+            return new SuccessResult("Car deleted");
+        }
 
-        [Required(ErrorMessage = "Description is required")]
-        [StringLength(500, ErrorMessage = "Description cannot be longer than 500 characters")]
-        public string Description { get; set; }
+        public IDataResult<List<Car>> GetAll()
+        {
+            return new SuccessDataResult<List<Car>>(_carDal.GetAll(), "Cars listed");
+        }
 
-        [NotMapped]
-        public string BrandName { get; set; }
+        public IDataResult<Car> GetById(int carId)
+        {
+            var car = _carDal.Get(c => c.CarId == carId);
+            if (car == null)
+                return new ErrorDataResult<Car>("Car not found");
+            return new SuccessDataResult<Car>(car);
+        }
 
-        [NotMapped]
-        public string ColorName { get; set; }
+        public IDataResult<List<CarDetailDto>> GetCarDetails()
+        {
+            return new SuccessDataResult<List<CarDetailDto>>(_carDal.GetCarDetails(), "Car details listed");
+        }
+
+        public IDataResult<List<CarDetailDto>> GetCarDetail(int carId)
+        {
+            var carDetail = _carDal.GetCarDetail(carId);
+            if (carDetail == null || carDetail.Count == 0)
+                return new ErrorDataResult<List<CarDetailDto>>("Car detail not found");
+            return new SuccessDataResult<List<CarDetailDto>>(carDetail, "Car detail retrieved");
+        }
+
+        public IDataResult<List<CarDetailDto>> GetCarsByBrandId(int brandId)
+        {
+            var carDetails = _carDal.GetCarDetails();
+            var filtered = carDetails.Where(c => c.BrandId == brandId).ToList();
+            if (!filtered.Any())
+                return new SuccessDataResult<List<CarDetailDto>>(filtered, "No cars found for this brand");
+            return new SuccessDataResult<List<CarDetailDto>>(filtered, "Cars filtered by brand");
+        }
+
+        public IDataResult<List<CarDetailDto>> GetCarsByColorId(int colorId)
+        {
+            var carDetails = _carDal.GetCarDetails();
+            var filtered = carDetails.Where(c => c.ColorId == colorId).ToList();
+            if (!filtered.Any())
+                return new SuccessDataResult<List<CarDetailDto>>(filtered, "No cars found for this color");
+            return new SuccessDataResult<List<CarDetailDto>>(filtered, "Cars filtered by color");
+        }
+
+        public IDataResult<List<CarDetailDto>> GetCarsByBrandAndColorId(int brandId, int colorId)
+        {
+            var carDetails = _carDal.GetCarDetails();
+            var filtered = carDetails
+                .Where(c => c.BrandId == brandId && c.ColorId == colorId)
+                .ToList();
+            if (!filtered.Any())
+                return new SuccessDataResult<List<CarDetailDto>>(filtered, "No cars found for this brand and color");
+            return new SuccessDataResult<List<CarDetailDto>>(filtered, "Cars filtered by brand and color");
+        }
+
+        public IResult Update(Car car)
+        {
+            if (car.DailyPrice <= 0)
+                return new ErrorResult("Daily price must be greater than 0");
+            if (string.IsNullOrWhiteSpace(car.Description))
+                return new ErrorResult("Description is required");
+
+            _carDal.Update(car);
+            return new SuccessResult("Car updated");
+        }
     }
 }

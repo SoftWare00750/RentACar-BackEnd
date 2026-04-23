@@ -1,141 +1,22 @@
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using RentACar.Business.Abstract;
-using RentACar.Entities.Concrete;
+function fibonacciGenerator(n) {
+    var output = [];
 
-namespace RentACar.API.Controllers
-{
-    [Route("api/[controller]")]
-    [ApiController]
-    [Authorize]
-    public class CarsController : ControllerBase
-    {
-        ICarService _carService;
-
-        public CarsController(ICarService carService)
-        {
-            _carService = carService;
-        }
-
-        [HttpGet("getall")]
-        [AllowAnonymous]
-        public IActionResult GetAll()
-        {
-            var result = _carService.GetAll();
-            if (result.Success)
-            {
-                return Ok(result);
-            }
-            return BadRequest(result);
-        }
-
-        [HttpGet("getbyid/{carId}")]
-        [AllowAnonymous]
-        public IActionResult GetById(int carId)
-        {
-            var result = _carService.GetById(carId);
-            if (result.Success)
-            {
-                return Ok(result);
-            }
-            return NotFound(result);
-        }
-
-        [HttpGet("getcardetails")]
-        [AllowAnonymous]
-        public IActionResult GetCarDetails()
-        {
-            var result = _carService.GetCarDetails();
-            if (result.Success)
-            {
-                return Ok(result);
-            }
-            return BadRequest(result);
-        }
-
-        [HttpGet("getcardetail/{carId}")]
-        [AllowAnonymous]
-        public IActionResult GetCarDetail(int carId)
-        {
-            var result = _carService.GetCarDetail(carId);
-            if (result.Success)
-            {
-                return Ok(result);
-            }
-            return NotFound(result);
-        }
-
-        [HttpGet("getbybrand/{brandId}")]
-        [AllowAnonymous]
-        public IActionResult GetByBrandId(int brandId)
-        {
-            var result = _carService.GetCarsByBrandId(brandId);
-            if (result.Success)
-            {
-                return Ok(result);
-            }
-            return BadRequest(result);
-        }
-
-        [HttpGet("getbycolor/{colorId}")]
-        [AllowAnonymous]
-        public IActionResult GetByColorId(int colorId)
-        {
-            var result = _carService.GetCarsByColorId(colorId);
-            if (result.Success)
-            {
-                return Ok(result);
-            }
-            return BadRequest(result);
-        }
-
-        [HttpPost("add")]
-        public IActionResult Add([FromBody] Car car)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var result = _carService.Add(car);
-            if (result.Success)
-            {
-                return Ok(result);
-            }
-            return BadRequest(result);
-        }
-
-        [HttpPut("update")]
-        public IActionResult Update([FromBody] Car car)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var result = _carService.Update(car);
-            if (result.Success)
-            {
-                return Ok(result);
-            }
-            return BadRequest(result);
-        }
-
-        [HttpDelete("delete/{carId}")]
-        public IActionResult Delete(int carId)
-        {
-            var car = _carService.GetById(carId);
-            if (!car.Success)
-            {
-                return NotFound(car);
-            }
-            
-            var result = _carService.Delete(car.Data);
-            if (result.Success)
-            {
-                return Ok(result);
-            }
-            return BadRequest(result);
+    if (n === 1) {
+        output = [0];
+    } 
+    else if (n === 2) {
+        output = [0, 1];
+    } 
+    else {
+        output = [0, 1];
+        
+        // Start the loop from index 2 since we already have 0 and 1
+        for (var i = 2; i < n; i++) {
+            // Add the last two numbers in the current array
+            var nextValue = output[output.length - 2] + output[output.length - 1];
+            output.push(nextValue);
         }
     }
+
+    return output;
 }

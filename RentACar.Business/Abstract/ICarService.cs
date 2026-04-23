@@ -12,6 +12,7 @@ namespace RentACar.Business.Abstract
         IDataResult<List<CarDetailDto>> GetCarDetail(int carId);
         IDataResult<List<CarDetailDto>> GetCarsByBrandId(int brandId);
         IDataResult<List<CarDetailDto>> GetCarsByColorId(int colorId);
+        IDataResult<List<CarDetailDto>> GetCarsByBrandAndColorId(int brandId, int colorId);
         IResult Add(Car car);
         IResult Update(Car car);
         IResult Delete(Car car);
