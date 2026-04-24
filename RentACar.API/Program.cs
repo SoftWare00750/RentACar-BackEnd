@@ -107,7 +107,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("Production", policyBuilder =>
     {
         var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>()
-            ?? new[] { "https://yourdomain.com" };
+            ?? new[] { "https://renta-car-six.vercel.app" };
 
         policyBuilder
             .WithOrigins(allowedOrigins)
