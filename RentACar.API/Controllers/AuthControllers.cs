@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RentACar.Business.Abstract;
+using RentACar.Core.Utilities.Security.Hashing;
 using RentACar.Entities.DTOs;
 
 namespace RentACar.API.Controllers
@@ -24,12 +25,12 @@ namespace RentACar.API.Controllers
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
             var userToLogin = _authService.Login(userForLoginDto);
-            if (!userToLogin.Success) return BadRequest(userToLogin.Message);
+            if (!userToLogin.Success) return BadRequest(new { message = userToLogin.Message });
 
             var result = _authService.CreateAccessToken(userToLogin.Data);
             if (result.Success) return Ok(result);
 
-            return BadRequest(result.Message);
+            return BadRequest(new { message = result.Message });
         }
 
         [HttpPost("register")]
@@ -38,38 +39,40 @@ namespace RentACar.API.Controllers
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
             var userExists = _authService.UserExists(userForRegisterDto.Email);
-            if (!userExists.Success) return BadRequest(userExists.Message);
+            if (!userExists.Success) return BadRequest(new { message = userExists.Message });
 
             var registerResult = _authService.Register(userForRegisterDto, userForRegisterDto.Password);
-            if (!registerResult.Success) return BadRequest(registerResult.Message);
+            if (!registerResult.Success) return BadRequest(new { message = registerResult.Message });
 
             var result = _authService.CreateAccessToken(registerResult.Data);
             if (result.Success) return Ok(result);
 
-            return BadRequest(result.Message);
+            return BadRequest(new { message = result.Message });
         }
 
-        // /auth/changepassword - used by frontend useredit component
         [HttpPost("changepassword")]
         [Authorize]
         public IActionResult ChangePassword([FromBody] PasswordChangeDto passwordChangeDto)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var user = _userService.GetById(passwordChangeDto.UserId);
-            if (!user.Success) return NotFound(new { message = "User not found" });
+            var userResult = _userService.GetById(passwordChangeDto.UserId);
+            if (!userResult.Success) return NotFound(new { message = "User not found" });
 
-            // Verify old password
-            var loginCheck = _authService.Login(new UserForLoginDto
-            {
-                Email = user.Data.Email,
-                Password = passwordChangeDto.OldPassword
-            });
+            var user = userResult.Data;
 
-            if (!loginCheck.Success)
+            // Verify current password
+            if (!HashingHelper.VerifyPasswordHash(passwordChangeDto.OldPassword, user.PasswordHash, user.PasswordSalt))
                 return BadRequest(new { message = "Current password is incorrect" });
 
-            // This is a simplified implementation - in production you'd update the hash
+            // Update password hash
+            byte[] newHash, newSalt;
+            HashingHelper.CreatePasswordHash(passwordChangeDto.NewPassword, out newHash, out newSalt);
+            user.PasswordHash = newHash;
+            user.PasswordSalt = newSalt;
+
+            _userService.Update(user);
+
             return Ok(new { success = true, message = "Password changed successfully" });
         }
     }

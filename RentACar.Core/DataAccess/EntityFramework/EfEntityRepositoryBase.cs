@@ -8,52 +8,48 @@ namespace RentACar.Core.DataAccess.EntityFramework
         where TEntity : class, IEntity, new()
         where TContext : DbContext, new()
     {
+        private readonly TContext? _injectedContext;
+
+        public EfEntityRepositoryBase() { }
+
+        protected TContext GetContext()
+        {
+            return _injectedContext ?? new TContext();
+        }
+
         public void Add(TEntity entity)
         {
-            using (TContext context = new TContext())
-            {
-                var addedEntity = context.Entry(entity);
-                addedEntity.State = EntityState.Added;
-                context.SaveChanges();
-            }
+            using var context = GetContext();
+            context.Entry(entity).State = EntityState.Added;
+            context.SaveChanges();
         }
 
         public void Delete(TEntity entity)
         {
-            using (TContext context = new TContext())
-            {
-                var deletedEntity = context.Entry(entity);
-                deletedEntity.State = EntityState.Deleted;
-                context.SaveChanges();
-            }
+            using var context = GetContext();
+            context.Entry(entity).State = EntityState.Deleted;
+            context.SaveChanges();
         }
 
         public TEntity? Get(Expression<Func<TEntity, bool>> filter)
         {
-            using (TContext context = new TContext())
-            {
-                return context.Set<TEntity>().SingleOrDefault(filter);
-            }
+            using var context = GetContext();
+            return context.Set<TEntity>().SingleOrDefault(filter);
         }
 
         public List<TEntity> GetAll(Expression<Func<TEntity, bool>>? filter = null)
         {
-            using (TContext context = new TContext())
-            {
-                return filter == null
-                    ? context.Set<TEntity>().ToList()
-                    : context.Set<TEntity>().Where(filter).ToList();
-            }
+            using var context = GetContext();
+            return filter == null
+                ? context.Set<TEntity>().ToList()
+                : context.Set<TEntity>().Where(filter).ToList();
         }
 
         public void Update(TEntity entity)
         {
-            using (TContext context = new TContext())
-            {
-                var updatedEntity = context.Entry(entity);
-                updatedEntity.State = EntityState.Modified;
-                context.SaveChanges();
-            }
+            using var context = GetContext();
+            context.Entry(entity).State = EntityState.Modified;
+            context.SaveChanges();
         }
     }
 }

@@ -5,28 +5,29 @@ namespace RentACar.DataAccess.Concrete.EntityFramework
 {
     public class RentACarContext : DbContext
     {
-        // REQUIRED by EfEntityRepositoryBase
+        // Parameterless constructor required by EfEntityRepositoryBase
         public RentACarContext()
         {
         }
 
-        // OPTIONAL for DI (Program.cs)
+        // DI constructor
         public RentACarContext(DbContextOptions<RentACarContext> options)
             : base(options)
         {
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-{
-    if (!optionsBuilder.IsConfigured)
-    {
-        // This will use the connection string from appsettings.json or environment variable
-        var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection") 
-            ?? "Host=dpg-d4s8l2ndiees73a8ko8g-a;Port=5432;Database=rentacardb;Username=rentacar_user;Password=AOdeXyXXkOfcKhC2nqjzoRRwtljGUAnB";
-        
-        optionsBuilder.UseNpgsql(connectionString);
-    }
-}
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+                // Try environment variable first (Render sets this)
+                var connectionString =
+                    Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection")
+                    ?? "Host=dpg-d4s8l2ndiees73a8ko8g-a;Port=5432;Database=rentacardb;Username=rentacar_user;Password=AOdeXyXXkOfcKhC2nqjzoRRwtljGUAnB";
+
+                optionsBuilder.UseNpgsql(connectionString);
+            }
+        }
 
         public DbSet<Car> Cars { get; set; }
         public DbSet<Brand> Brands { get; set; }
