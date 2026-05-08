@@ -70,7 +70,6 @@ namespace RentACar.API.Controllers
             HashingHelper.CreatePasswordHash(passwordChangeDto.NewPassword, out newHash, out newSalt);
             user.PasswordHash = newHash;
             user.PasswordSalt = newSalt;
-
             _userService.Update(user);
 
             return Ok(new { success = true, message = "Password changed successfully" });

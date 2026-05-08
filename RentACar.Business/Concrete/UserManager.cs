@@ -29,6 +29,12 @@ namespace RentACar.Business.Concrete
             return _userDal.Get(u => u.Email == email);
         }
 
+        public IResult Update(User user)           // <-- ADD THIS
+        {
+            _userDal.Update(user);
+            return new SuccessResult(Messages.UserUpdated);
+        }
+
         public IDataResult<User> GetById(int userId)
         {
             var user = _userDal.Get(u => u.UserId == userId);

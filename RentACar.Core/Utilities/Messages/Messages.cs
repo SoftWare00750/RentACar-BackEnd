@@ -11,6 +11,7 @@ namespace RentACar.Core.Utilities.Messages
         public static string PasswordError = "Password error";
         public static string SuccessfulLogin = "Login successful";
         public static string UserAlreadyExists = "User already exists";
+        public static string UserUpdated = "User updated.";
         public static string UserRegistered = "User registered successfully";
         public static string AccessTokenCreated = "Access token created";
         
