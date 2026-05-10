@@ -39,14 +39,10 @@ namespace RentACar.Business.Concrete
         {
             var userToCheck = _userService.GetByMail(userForLoginDto.Email);
             if (userToCheck == null)
-            {
                 return new ErrorDataResult<User>("User not found");
-            }
 
             if (!HashingHelper.VerifyPasswordHash(userForLoginDto.Password, userToCheck.PasswordHash, userToCheck.PasswordSalt))
-            {
                 return new ErrorDataResult<User>("Password is incorrect");
-            }
 
             return new SuccessDataResult<User>(userToCheck, "Login successful");
         }
@@ -54,15 +50,12 @@ namespace RentACar.Business.Concrete
         public IResult UserExists(string email)
         {
             if (_userService.GetByMail(email) != null)
-            {
                 return new ErrorResult("User already exists");
-            }
             return new SuccessResult();
         }
 
         public IDataResult<AccessToken> CreateAccessToken(User user)
         {
-            // Convert RentACar.Entities.Concrete.User to RentACar.Core.Entities.Concrete.User
             var coreUser = new Core.Entities.Concrete.User
             {
                 UserId = user.UserId,
@@ -74,9 +67,8 @@ namespace RentACar.Business.Concrete
                 Status = user.Status
             };
 
-            // Convert RentACar.Entities.Concrete.OperationClaim to RentACar.Core.Entities.Concrete.OperationClaim
-            var claims = _userService.GetClaims(user);
-            var coreClaims = claims.Select(c => new Core.Entities.Concrete.OperationClaim
+            var claimsResult = _userService.GetClaims(user);
+            var coreClaims = claimsResult.Data.Select(c => new Core.Entities.Concrete.OperationClaim
             {
                 Id = c.Id,
                 Name = c.Name
