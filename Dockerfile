@@ -22,7 +22,7 @@ RUN dotnet publish "RentACar.API.csproj" -c Release -o /publish
 # Runtime stage
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
-EXPOSE 8080
+EXPOSE 10000
 
 COPY --from=build /publish .
 

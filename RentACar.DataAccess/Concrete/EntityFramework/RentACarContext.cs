@@ -16,18 +16,18 @@ namespace RentACar.DataAccess.Concrete.EntityFramework
         {
         }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (!optionsBuilder.IsConfigured)
-            {
-                // Try environment variable first (Render sets this)
-                var connectionString =
-                    Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection")
-                    ?? "Host=dpg-d4s8l2ndiees73a8ko8g-a;Port=5432;Database=rentacardb;Username=rentacar_user;Password=AOdeXyXXkOfcKhC2nqjzoRRwtljGUAnB";
+       protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+  {
+    if (!optionsBuilder.IsConfigured)
+    {
+        var connectionString =
+            Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection")
+            ?? throw new InvalidOperationException(
+                "ConnectionStrings__DefaultConnection environment variable is not set.");
 
-                optionsBuilder.UseNpgsql(connectionString);
-            }
-        }
+        optionsBuilder.UseNpgsql(connectionString);
+    }
+}
 
         public DbSet<Car> Cars { get; set; }
         public DbSet<Brand> Brands { get; set; }
