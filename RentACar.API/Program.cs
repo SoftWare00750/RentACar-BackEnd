@@ -54,7 +54,15 @@ var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__De
 if (string.IsNullOrWhiteSpace(connectionString) || connectionString == "NOT_SET_USE_ENV_VAR")
     throw new InvalidOperationException(
         "Connection string not found. Set the ConnectionStrings__DefaultConnection environment variable.");
-        
+
+// Render provides postgres:// URLs; convert to Npgsql key-value format
+if (connectionString.StartsWith("postgres://") || connectionString.StartsWith("postgresql://"))
+{
+    var uri = new Uri(connectionString);
+    var userInfo = uri.UserInfo.Split(':');
+    connectionString = $"Host={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};Username={userInfo[0]};Password={Uri.UnescapeDataString(userInfo[1])};SSL Mode=Require;Trust Server Certificate=true";
+}
+
 builder.Services.AddDbContext<RentACarContext>(options =>
     options.UseNpgsql(connectionString));
 
@@ -96,7 +104,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-// Add CORS - allow Angular dev server and production origins
+// Add CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policyBuilder =>
@@ -140,7 +148,7 @@ if (app.Environment.IsDevelopment())
 // Use exception middleware
 app.UseMiddleware<ExceptionMiddleware>();
 
-// IMPORTANT: CORS must come before Authentication/Authorization
+// CORS must come before Authentication/Authorization
 var corsPolicy = app.Environment.IsDevelopment() ? "AllowAll" : "Production";
 app.UseCors(corsPolicy);
 
@@ -150,10 +158,19 @@ app.UseAuthorization();
 app.MapControllers();
 app.MapHealthChecks("/health");
 
-// AFTER (creates tables directly from your entity models)
+// Initialize database
 using (var scope = app.Services.CreateScope())
 {
-    var db = scope.ServiceProvider.GetRequiredService<RentACarContext>();
-    db.Database.EnsureCreated();
+    try
+    {
+        var db = scope.ServiceProvider.GetRequiredService<RentACarContext>();
+        db.Database.EnsureCreated();
+    }
+    catch (Exception ex)
+    {
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred while initializing the database.");
+    }
 }
+
 app.Run();
