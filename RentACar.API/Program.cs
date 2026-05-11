@@ -147,9 +147,10 @@ app.UseAuthorization();
 app.MapControllers();
 app.MapHealthChecks("/health");
 
+// AFTER (creates tables directly from your entity models)
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<RentACarContext>();
-    db.Database.Migrate();
+    db.Database.EnsureCreated();
 }
 app.Run();
