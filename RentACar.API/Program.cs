@@ -48,10 +48,13 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 // Configure DbContext
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-    ?? Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection")
-    ?? throw new InvalidOperationException("Connection string not found");
+var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection")
+    ?? builder.Configuration.GetConnectionString("DefaultConnection");
 
+if (string.IsNullOrWhiteSpace(connectionString) || connectionString == "NOT_SET_USE_ENV_VAR")
+    throw new InvalidOperationException(
+        "Connection string not found. Set the ConnectionStrings__DefaultConnection environment variable.");
+        
 builder.Services.AddDbContext<RentACarContext>(options =>
     options.UseNpgsql(connectionString));
 
