@@ -10,8 +10,16 @@ namespace RentACar.Core.DataAccess.EntityFramework
     {
         private readonly TContext? _injectedContext;
 
+        // Parameterless constructor: used when subclasses are resolved without DI injection
         public EfEntityRepositoryBase() { }
 
+        // Constructor for DI injection — subclasses should expose this via their own constructor
+        public EfEntityRepositoryBase(TContext context)
+        {
+            _injectedContext = context;
+        }
+
+        // Returns the injected context if available, otherwise creates a new one (parameterless path)
         protected TContext GetContext()
         {
             return _injectedContext ?? new TContext();
