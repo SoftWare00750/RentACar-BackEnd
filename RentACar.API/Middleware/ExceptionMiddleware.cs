@@ -5,46 +5,51 @@ namespace RentACar.API.Middleware
 {
     public class ExceptionMiddleware
     {
-        private readonly RequestDelegate _next;
+        private readonly RequestDelegate            _next;
         private readonly ILogger<ExceptionMiddleware> _logger;
-        private readonly IHostEnvironment _env;
+        private readonly IHostEnvironment           _env;
 
-        public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger, IHostEnvironment env)
+        public ExceptionMiddleware(
+            RequestDelegate next,
+            ILogger<ExceptionMiddleware> logger,
+            IHostEnvironment env)
         {
-            _next = next;
+            _next   = next;
             _logger = logger;
-            _env = env;
+            _env    = env;
         }
 
-        public async Task InvokeAsync(HttpContext httpContext)
+        public async Task InvokeAsync(HttpContext context)
         {
             try
             {
-                await _next(httpContext);
+                await _next(context);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Unhandled exception: {Message}", ex.Message);
-                await HandleExceptionAsync(httpContext, ex);
+                await HandleExceptionAsync(context, ex);
             }
         }
 
-        private Task HandleExceptionAsync(HttpContext context, Exception exception)
+        private static Task HandleExceptionAsync(HttpContext context, Exception ex)
         {
             context.Response.ContentType = "application/json";
-            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            context.Response.StatusCode  = (int)HttpStatusCode.InternalServerError;
 
-            // Always include the full detail so errors are visible during debugging.
-            // Remove the InnerException line once the app is stable in production.
+            // Always include the full message so you can diagnose production 500s.
+            // Once the app is stable you can remove InnerException from the response.
             var response = new
             {
-                StatusCode = context.Response.StatusCode,
-                Message = exception.Message,
-                InnerException = exception.InnerException?.Message,
-                StackTrace = _env.IsDevelopment() ? exception.StackTrace : null
+                StatusCode     = context.Response.StatusCode,
+                Message        = ex.Message,
+                InnerException = ex.InnerException?.Message,
+                Type           = ex.GetType().Name
             };
 
-            return context.Response.WriteAsync(JsonSerializer.Serialize(response));
+            return context.Response.WriteAsync(
+                JsonSerializer.Serialize(response,
+                    new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }));
         }
     }
 }
