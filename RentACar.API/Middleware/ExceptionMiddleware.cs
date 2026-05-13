@@ -24,7 +24,7 @@ namespace RentACar.API.Middleware
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong: {ex}");
+                _logger.LogError(ex, "Unhandled exception: {Message}", ex.Message);
                 await HandleExceptionAsync(httpContext, ex);
             }
         }
@@ -34,11 +34,14 @@ namespace RentACar.API.Middleware
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 
+            // Always include the full detail so errors are visible during debugging.
+            // Remove the InnerException line once the app is stable in production.
             var response = new
             {
                 StatusCode = context.Response.StatusCode,
-                Message = "Internal Server Error",
-                Detailed = _env.IsDevelopment() ? exception.Message : "An error occurred processing your request"
+                Message = exception.Message,
+                InnerException = exception.InnerException?.Message,
+                StackTrace = _env.IsDevelopment() ? exception.StackTrace : null
             };
 
             return context.Response.WriteAsync(JsonSerializer.Serialize(response));

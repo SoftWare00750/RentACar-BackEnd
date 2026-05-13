@@ -47,7 +47,7 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// Configure DbContext
+// Build connection string
 var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection")
     ?? builder.Configuration.GetConnectionString("DefaultConnection");
 
@@ -88,6 +88,14 @@ builder.Services.AddScoped<ITokenHelper, JwtHelper>();
 var tokenOptions = builder.Configuration.GetSection("TokenOptions").Get<TokenOptions>()
     ?? throw new InvalidOperationException("TokenOptions configuration not found");
 
+// Allow token options to be overridden by environment variables
+var audience = Environment.GetEnvironmentVariable("TokenOptions__Audience") ?? tokenOptions.Audience;
+var issuer = Environment.GetEnvironmentVariable("TokenOptions__Issuer") ?? tokenOptions.Issuer;
+var securityKey = Environment.GetEnvironmentVariable("TokenOptions__SecurityKey") ?? tokenOptions.SecurityKey;
+var expiration = int.TryParse(Environment.GetEnvironmentVariable("TokenOptions__AccessTokenExpiration"), out var exp)
+    ? exp
+    : tokenOptions.AccessTokenExpiration;
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -97,9 +105,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = tokenOptions.Issuer,
-            ValidAudience = tokenOptions.Audience,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenOptions.SecurityKey)),
+            ValidIssuer = issuer,
+            ValidAudience = audience,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(securityKey)),
             ClockSkew = TimeSpan.Zero
         };
     });
@@ -135,22 +143,19 @@ builder.Services.AddHealthChecks()
 var app = builder.Build();
 
 // Configure the HTTP request pipeline
-if (app.Environment.IsDevelopment())
+// Show Swagger in all environments so you can debug on production
+app.UseSwagger();
+app.UseSwaggerUI(c =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
-    {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "RentACar API V1");
-        c.RoutePrefix = string.Empty;
-    });
-}
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "RentACar API V1");
+    c.RoutePrefix = "swagger";
+});
 
 // Use exception middleware
 app.UseMiddleware<ExceptionMiddleware>();
 
 // CORS must come before Authentication/Authorization
-var corsPolicy = app.Environment.IsDevelopment() ? "AllowAll" : "Production";
-app.UseCors(corsPolicy);
+app.UseCors("AllowAll");
 
 app.UseAuthentication();
 app.UseAuthorization();
@@ -158,18 +163,30 @@ app.UseAuthorization();
 app.MapControllers();
 app.MapHealthChecks("/health");
 
-// Initialize database
+// Initialize database — create tables if they don't exist
 using (var scope = app.Services.CreateScope())
 {
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
     try
     {
         var db = scope.ServiceProvider.GetRequiredService<RentACarContext>();
-        db.Database.EnsureCreated();
+
+        // Test connection first
+        logger.LogInformation("Testing database connection...");
+        await db.Database.CanConnectAsync();
+        logger.LogInformation("Database connection successful.");
+
+        // EnsureCreated creates tables only if the database is empty / tables missing
+        var created = await db.Database.EnsureCreatedAsync();
+        if (created)
+            logger.LogInformation("Database tables created successfully.");
+        else
+            logger.LogInformation("Database already exists. Tables were not recreated.");
     }
     catch (Exception ex)
     {
-        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "An error occurred while initializing the database.");
+        logger.LogError(ex, "An error occurred while initializing the database: {Message}", ex.Message);
+        // Don't throw — let the app start so /health and /swagger are reachable for debugging
     }
 }
 
