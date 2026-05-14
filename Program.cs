@@ -18,7 +18,12 @@ builder.Services.AddCors(opt =>
             "https://localhost:4200"
         };
         var extra = builder.Configuration["AllowedOrigins"];
-        if (!string.IsNullOrWhiteSpace(extra)) origins.Add(extra);
+        if (!string.IsNullOrWhiteSpace(extra))
+        {
+            // Support comma-separated list of origins
+            foreach (var origin in extra.Split(',', StringSplitOptions.RemoveEmptyEntries))
+                origins.Add(origin.Trim().TrimEnd('/'));
+        }
 
         policy.WithOrigins(origins.ToArray())
               .AllowAnyHeader()
@@ -27,36 +32,31 @@ builder.Services.AddCors(opt =>
     });
 });
 
-// ─── Database (SQLite) ────────────────────────────────────────────────────────
-// Resolve the connection string with a safe fallback chain:
-//   1. ConnectionStrings__DefaultConnection env var  (Render / Docker)
-//   2. ConnectionStrings:DefaultConnection in appsettings.json
-//   3. Hard-coded fallback so the app never crashes on a missing/empty value
-var rawCs = builder.Configuration.GetConnectionString("DefaultConnection");
-
-// Guard: if the value is null, empty, or doesn't look like an SQLite DSN,
-// build a safe default pointing at the persistent-disk path on Render,
-// or the current directory when running locally.
+// ─── Database (PostgreSQL) ────────────────────────────────────────────────────
+// Priority: env var DATABASE_URL (Render Postgres) → ConnectionStrings:DefaultConnection
+// Render injects DATABASE_URL as a postgres:// URI; Npgsql needs it converted.
+var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
 string connectionString;
-if (string.IsNullOrWhiteSpace(rawCs) || !rawCs.Contains('='))
+
+if (!string.IsNullOrWhiteSpace(databaseUrl))
 {
-    // On Render the disk is mounted at /data; locally write next to the binary.
-    var dbDir  = Directory.Exists("/data") ? "/data" : Directory.GetCurrentDirectory();
-    connectionString = $"Data Source={Path.Combine(dbDir, "rentacar.db")}";
-    Console.WriteLine($"[Startup] ConnectionString was empty — using fallback: {connectionString}");
+    // Convert postgres://user:pass@host:port/db  →  Npgsql DSN
+    connectionString = ConvertPostgresUrl(databaseUrl);
+    Console.WriteLine("[Startup] Using DATABASE_URL env var (PostgreSQL)");
 }
 else
 {
-    connectionString = rawCs;
-    Console.WriteLine($"[Startup] Using connection string: {connectionString}");
+    connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+        ?? throw new InvalidOperationException("No database connection string found. Set DATABASE_URL or ConnectionStrings:DefaultConnection.");
+    Console.WriteLine($"[Startup] Using connection string from config: {MaskPassword(connectionString)}");
 }
 
 builder.Services.AddDbContext<AppDbContext>(opt =>
-    opt.UseSqlite(connectionString));
+    opt.UseNpgsql(connectionString));
 
 // ─── JWT Authentication ───────────────────────────────────────────────────────
 var jwtKey = builder.Configuration["Jwt:Key"]
-    ?? throw new InvalidOperationException("Jwt:Key must be set (env var Jwt__Key or appsettings.json).");
+    ?? throw new InvalidOperationException("Jwt:Key must be set.");
 
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -81,13 +81,13 @@ builder.Services.AddControllers();
 
 var app = builder.Build();
 
-// ─── Auto-create DB + uploads folder ─────────────────────────────────────────
+// ─── Auto-create DB schema + uploads folder ───────────────────────────────────
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    // EnsureCreated works for both Postgres and SQLite
     db.Database.EnsureCreated();
 
-    // Ensure the uploads folder exists (volume-mounted on Render/Docker)
     var webRoot = app.Environment.WebRootPath
                   ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
     Directory.CreateDirectory(Path.Combine(webRoot, "uploads"));
@@ -102,3 +102,26 @@ app.MapControllers();
 app.MapGet("/health", () => Results.Ok(new { status = "healthy", time = DateTime.UtcNow }));
 
 app.Run();
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+// Converts a Render/Heroku-style postgres:// URI to an Npgsql connection string.
+// postgres://user:password@host:port/database
+static string ConvertPostgresUrl(string url)
+{
+    var uri      = new Uri(url);
+    var userInfo = uri.UserInfo.Split(':');
+    var user     = Uri.UnescapeDataString(userInfo[0]);
+    var password = userInfo.Length > 1 ? Uri.UnescapeDataString(userInfo[1]) : "";
+    var host     = uri.Host;
+    var port     = uri.Port > 0 ? uri.Port : 5432;
+    var database = uri.AbsolutePath.TrimStart('/');
+    return $"Host={host};Port={port};Database={database};Username={user};Password={password};SSL Mode=Require;Trust Server Certificate=true";
+}
+
+static string MaskPassword(string cs)
+{
+    // Mask Password= value in logs
+    return System.Text.RegularExpressions.Regex.Replace(
+        cs, @"Password=[^;]+", "Password=***");
+}

@@ -44,7 +44,7 @@ public class AppDbContext : DbContext
         mb.Entity<Car>(e =>
         {
             e.HasKey(c => c.CarId);
-            e.Property(c => c.DailyPrice).HasColumnType("decimal(10,2)");
+            e.Property(c => c.DailyPrice).HasColumnType("numeric(10,2)");
             e.HasOne(c => c.Brand)
              .WithMany(b => b.Cars)
              .HasForeignKey(c => c.BrandId)
@@ -69,7 +69,7 @@ public class AppDbContext : DbContext
         mb.Entity<Rental>(e =>
         {
             e.HasKey(r => r.RentalId);
-            e.Property(r => r.TotalRentPrice).HasColumnType("decimal(10,2)");
+            e.Property(r => r.TotalRentPrice).HasColumnType("numeric(10,2)");
             e.HasOne(r => r.Car)
              .WithMany(c => c.Rentals)
              .HasForeignKey(r => r.CarId)
@@ -84,7 +84,7 @@ public class AppDbContext : DbContext
         mb.Entity<CreditCard>(e =>
         {
             e.HasKey(cc => cc.Id);
-            e.Property(cc => cc.MoneyInTheCard).HasColumnType("decimal(12,2)");
+            e.Property(cc => cc.MoneyInTheCard).HasColumnType("numeric(12,2)");
         });
 
         // ── Seed data ──────────────────────────────────────────────────────────
@@ -93,19 +93,17 @@ public class AppDbContext : DbContext
 
     private static void SeedData(ModelBuilder mb)
     {
-        // Brands
         mb.Entity<Brand>().HasData(
-            new Brand { BrandId = 1, BrandName = "Toyota"      },
-            new Brand { BrandId = 2, BrandName = "Honda"       },
-            new Brand { BrandId = 3, BrandName = "BMW"         },
-            new Brand { BrandId = 4, BrandName = "Mercedes"    },
-            new Brand { BrandId = 5, BrandName = "Ford"        },
-            new Brand { BrandId = 6, BrandName = "Volkswagen"  },
-            new Brand { BrandId = 7, BrandName = "Hyundai"     },
-            new Brand { BrandId = 8, BrandName = "Nissan"      }
+            new Brand { BrandId = 1, BrandName = "Toyota"     },
+            new Brand { BrandId = 2, BrandName = "Honda"      },
+            new Brand { BrandId = 3, BrandName = "BMW"        },
+            new Brand { BrandId = 4, BrandName = "Mercedes"   },
+            new Brand { BrandId = 5, BrandName = "Ford"       },
+            new Brand { BrandId = 6, BrandName = "Volkswagen" },
+            new Brand { BrandId = 7, BrandName = "Hyundai"    },
+            new Brand { BrandId = 8, BrandName = "Nissan"     }
         );
 
-        // Colors
         mb.Entity<Models.Color>().HasData(
             new Models.Color { ColorId = 1, ColorName = "White"  },
             new Models.Color { ColorId = 2, ColorName = "Black"  },
@@ -115,25 +113,23 @@ public class AppDbContext : DbContext
             new Models.Color { ColorId = 6, ColorName = "Grey"   }
         );
 
-        // Cars
         mb.Entity<Car>().HasData(
-            new Car { CarId=1,  BrandId=1, ColorId=1, CarName="Toyota Corolla",        ModelYear="2022", DailyPrice=55,  Description="Reliable sedan, great fuel economy."      },
-            new Car { CarId=2,  BrandId=1, ColorId=2, CarName="Toyota Camry",          ModelYear="2023", DailyPrice=75,  Description="Comfortable mid-size sedan."               },
-            new Car { CarId=3,  BrandId=2, ColorId=3, CarName="Honda Civic",           ModelYear="2022", DailyPrice=50,  Description="Sporty compact car, smooth ride."          },
-            new Car { CarId=4,  BrandId=2, ColorId=5, CarName="Honda CR-V",            ModelYear="2023", DailyPrice=90,  Description="Versatile SUV with ample cargo space."     },
-            new Car { CarId=5,  BrandId=3, ColorId=2, CarName="BMW 3 Series",          ModelYear="2023", DailyPrice=150, Description="Luxury performance sedan."                 },
-            new Car { CarId=6,  BrandId=3, ColorId=1, CarName="BMW X5",               ModelYear="2023", DailyPrice=200, Description="Premium SUV with advanced tech."           },
-            new Car { CarId=7,  BrandId=4, ColorId=2, CarName="Mercedes C-Class",      ModelYear="2022", DailyPrice=160, Description="Elegant luxury sedan."                    },
-            new Car { CarId=8,  BrandId=4, ColorId=1, CarName="Mercedes GLE",         ModelYear="2023", DailyPrice=220, Description="Top-tier luxury SUV."                     },
-            new Car { CarId=9,  BrandId=5, ColorId=4, CarName="Ford Mustang",          ModelYear="2022", DailyPrice=130, Description="Iconic American muscle car."               },
-            new Car { CarId=10, BrandId=5, ColorId=1, CarName="Ford F-150",           ModelYear="2023", DailyPrice=110, Description="America's best-selling pickup truck."      },
-            new Car { CarId=11, BrandId=6, ColorId=6, CarName="Volkswagen Golf",      ModelYear="2022", DailyPrice=65,  Description="Classic hatchback, versatile and fun."     },
-            new Car { CarId=12, BrandId=7, ColorId=5, CarName="Hyundai Tucson",       ModelYear="2023", DailyPrice=85,  Description="Modern SUV with great warranty."           },
-            new Car { CarId=13, BrandId=8, ColorId=3, CarName="Nissan Altima",        ModelYear="2022", DailyPrice=70,  Description="Smooth sedan with ProPilot assist."        },
-            new Car { CarId=14, BrandId=8, ColorId=4, CarName="Nissan Kicks",         ModelYear="2023", DailyPrice=60,  Description="Urban crossover with distinctive style."   }
+            new Car { CarId=1,  BrandId=1, ColorId=1, CarName="Toyota Corolla",   ModelYear="2022", DailyPrice=55,  Description="Reliable sedan, great fuel economy."    },
+            new Car { CarId=2,  BrandId=1, ColorId=2, CarName="Toyota Camry",     ModelYear="2023", DailyPrice=75,  Description="Comfortable mid-size sedan."             },
+            new Car { CarId=3,  BrandId=2, ColorId=3, CarName="Honda Civic",      ModelYear="2022", DailyPrice=50,  Description="Sporty compact car, smooth ride."        },
+            new Car { CarId=4,  BrandId=2, ColorId=5, CarName="Honda CR-V",       ModelYear="2023", DailyPrice=90,  Description="Versatile SUV with ample cargo space."   },
+            new Car { CarId=5,  BrandId=3, ColorId=2, CarName="BMW 3 Series",     ModelYear="2023", DailyPrice=150, Description="Luxury performance sedan."               },
+            new Car { CarId=6,  BrandId=3, ColorId=1, CarName="BMW X5",           ModelYear="2023", DailyPrice=200, Description="Premium SUV with advanced tech."         },
+            new Car { CarId=7,  BrandId=4, ColorId=2, CarName="Mercedes C-Class", ModelYear="2022", DailyPrice=160, Description="Elegant luxury sedan."                  },
+            new Car { CarId=8,  BrandId=4, ColorId=1, CarName="Mercedes GLE",     ModelYear="2023", DailyPrice=220, Description="Top-tier luxury SUV."                   },
+            new Car { CarId=9,  BrandId=5, ColorId=4, CarName="Ford Mustang",     ModelYear="2022", DailyPrice=130, Description="Iconic American muscle car."             },
+            new Car { CarId=10, BrandId=5, ColorId=1, CarName="Ford F-150",       ModelYear="2023", DailyPrice=110, Description="America's best-selling pickup truck."    },
+            new Car { CarId=11, BrandId=6, ColorId=6, CarName="Volkswagen Golf",  ModelYear="2022", DailyPrice=65,  Description="Classic hatchback, versatile and fun."   },
+            new Car { CarId=12, BrandId=7, ColorId=5, CarName="Hyundai Tucson",   ModelYear="2023", DailyPrice=85,  Description="Modern SUV with great warranty."         },
+            new Car { CarId=13, BrandId=8, ColorId=3, CarName="Nissan Altima",    ModelYear="2022", DailyPrice=70,  Description="Smooth sedan with ProPilot assist."      },
+            new Car { CarId=14, BrandId=8, ColorId=4, CarName="Nissan Kicks",     ModelYear="2023", DailyPrice=60,  Description="Urban crossover with distinctive style." }
         );
 
-        // CarImages — one default image per car (uses public placeholder)
         var images = Enumerable.Range(1, 14).Select(id => new CarImage
         {
             ImageId   = id,
@@ -143,7 +139,6 @@ public class AppDbContext : DbContext
         }).ToArray();
         mb.Entity<CarImage>().HasData(images);
 
-        // Seed one admin user (password: Admin@123)
         mb.Entity<User>().HasData(new User
         {
             UserId       = 1,
@@ -155,7 +150,6 @@ public class AppDbContext : DbContext
             CreatedAt    = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc)
         });
 
-        // Seed test credit cards (for the credit card payment page)
         mb.Entity<CreditCard>().HasData(
             new CreditCard { Id=1, CardName="Test User",    CardNumber="4000056655665556", CardCvc="123", CardExpiration="12/26", MoneyInTheCard=50000 },
             new CreditCard { Id=2, CardName="Test User",    CardNumber="5200828282828210", CardCvc="456", CardExpiration="06/27", MoneyInTheCard=30000 },
