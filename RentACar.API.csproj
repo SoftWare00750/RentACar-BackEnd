@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>RentACar.API</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- SQLite + EF Core (no external DB needed - file-based) -->
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite"          Version="8.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design"          Version="8.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+
+    <!-- JWT authentication -->
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt"               Version="7.3.1" />
+
+    <!-- Password hashing -->
+    <PackageReference Include="BCrypt.Net-Next"                               Version="4.0.3" />
+  </ItemGroup>
+
+</Project>
