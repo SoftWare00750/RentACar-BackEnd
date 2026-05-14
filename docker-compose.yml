@@ -1,0 +1,64 @@
+version: "3.9"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# RentACar — Docker Compose
+#
+# Usage
+#   Development  : docker compose up --build
+#   Detached     : docker compose up -d --build
+#   Tear down    : docker compose down -v   (removes volumes too)
+# ─────────────────────────────────────────────────────────────────────────────
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: rentacar_api
+    restart: unless-stopped
+
+    # ── Ports ──────────────────────────────────────────────────────────────
+    ports:
+      - "8080:8080"       # host:container  →  http://localhost:8080
+
+    # ── Environment ────────────────────────────────────────────────────────
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+
+      # SQLite database stored in the named volume (survives restarts)
+      ConnectionStrings__DefaultConnection: "Data Source=/data/rentacar.db"
+
+      # JWT — override with a real secret in production!
+      Jwt__Key: "${JWT_KEY:-RentACarSuperSecretJwtKey2024!ChangeThisInProduction!AtLeast32Chars}"
+      Jwt__Issuer: "${JWT_ISSUER:-RentACar}"
+      Jwt__ExpiresMinutes: "${JWT_EXPIRES_MINUTES:-480}"
+
+      # Frontend origin (CORS) — set to your frontend URL in production
+      AllowedOrigins: "${ALLOWED_ORIGINS:-http://localhost:4200}"
+
+      # ASP.NET Core listens on this port inside the container
+      ASPNETCORE_URLS: "http://+:8080"
+
+    # ── Volumes ────────────────────────────────────────────────────────────
+    volumes:
+      # Persist the SQLite database file
+      - db_data:/data
+      # Persist uploaded car images
+      - uploads_data:/app/wwwroot/uploads
+
+    # ── Health check (mirrors the HEALTHCHECK in the Dockerfile) ──────────
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Named volumes — Docker manages these on the host
+# ─────────────────────────────────────────────────────────────────────────────
+volumes:
+  db_data:
+    driver: local
+  uploads_data:
+    driver: local

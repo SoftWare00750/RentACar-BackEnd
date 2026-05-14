@@ -1,0 +1,41 @@
+# ── Build artefacts ───────────────────────────────────────────────────────────
+bin/
+obj/
+out/
+
+# ── Runtime database (never bake the dev DB into the image) ──────────────────
+*.db
+*.db-shm
+*.db-wal
+
+# ── Git ───────────────────────────────────────────────────────────────────────
+.git/
+.gitignore
+.gitattributes
+
+# ── IDE / OS ──────────────────────────────────────────────────────────────────
+.vs/
+.vscode/
+.idea/
+*.user
+.DS_Store
+Thumbs.db
+
+# ── Docker files themselves (no need to copy into the image) ─────────────────
+Dockerfile
+docker-compose*.yml
+.dockerignore
+
+# ── Docs / CI ─────────────────────────────────────────────────────────────────
+README.md
+*.md
+.github/
+
+# ── Uploaded images (served from the volume, not baked into the image) ───────
+wwwroot/uploads/*
+!wwwroot/uploads/.gitkeep
+
+# ── Secrets / env files ───────────────────────────────────────────────────────
+.env
+.env.*
+appsettings.Development.json
